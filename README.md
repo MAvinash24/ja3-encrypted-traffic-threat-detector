@@ -184,7 +184,7 @@ curl https://google.com
 
 ---
 
-## 🧠 How It Works
+##  How It Works
 
 * Captures TLS handshake packets
 * Extracts JA3 fingerprint:
