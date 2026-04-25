@@ -54,6 +54,7 @@ ja3-threat-detector/
 ##  Backend Setup (Ubuntu / Kali / Debian)
 
 ```bash
+cd backend
 sudo apt update
 sudo apt install -y python3 python3-pip tshark
 ```
@@ -85,6 +86,7 @@ sudo venv/bin/python app.py
 ### Install Node.js (if not installed)
 
 ```bash
+cd frontend
 sudo apt install npm
 ```
 
@@ -118,7 +120,6 @@ You must create a `.env` file in the **frontend** folder to configure the backen
 ###  Step:
 
 ```bash
-cd frontend
 nano .env
 ```
 
