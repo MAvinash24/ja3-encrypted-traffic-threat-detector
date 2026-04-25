@@ -111,9 +111,34 @@ npm install
 npm install axios
 ```
 
+##  Environment Configuration (IMPORTANT)
+
+You must create a `.env` file in the **frontend** folder to configure the backend API URL.
+
+###  Step:
+
+```bash
+cd frontend
+nano .env
+```
+
+### Add:
+
+```
+VITE_API_URL=http://192.xxx.xxx.xxx:5000
+```
+
+
+### ⚠️ Note
+
+* This is required so the frontend can fetch alerts from backend
+* Without this, dashboard will not show data
+* Do not hardcode API URLs inside code (best practice)
+
 ---
 
-### Run frontend
+###  After creating `.env`
+## Run frontend
 
 ```bash
 npm run dev -- --host
