@@ -1,33 +1,60 @@
 import hashlib
 
-def parse_list(field):
+def safe_get(obj, field):
+    try:
+        return getattr(obj, field)
+    except AttributeError:
+        return None
+
+def split_fields(field):
     if not field:
         return []
-    return [str(x) for x in field.split(",")]
+    return str(field).split(",")
 
 def compute_ja3_from_packet(packet):
     try:
+        if not hasattr(packet, "tls"):
+            return None, None
+
         tls = packet.tls
 
-        version = str(tls.handshake_version)
+        # TLS version
+        version = safe_get(tls, "handshake_version")
+        if not version:
+            return None, None
 
-        # Cipher Suites
-        ciphers = parse_list(getattr(tls, "handshake_ciphersuites", ""))
+        # Cipher suites (important)
+        ciphers = safe_get(tls, "handshake_ciphersuites")
+        if not ciphers:
+            return None, None
+        ciphers = split_fields(ciphers)
 
         # Extensions
-        extensions = parse_list(getattr(tls, "handshake_extensions_type", ""))
+        extensions = safe_get(tls, "handshake_extensions_type")
+        extensions = split_fields(extensions)
 
-        # Supported Groups (Elliptic Curves)
-        curves = parse_list(getattr(tls, "handshake_extensions_supported_group", ""))
+        # Supported groups (elliptic curves)
+        curves = safe_get(tls, "handshake_extensions_supported_group")
+        curves = split_fields(curves)
 
-        # EC Point Formats
-        ec_formats = parse_list(getattr(tls, "handshake_extensions_ec_point_format", ""))
+        # EC point formats
+        ec_formats = safe_get(tls, "handshake_extensions_ec_point_format")
+        ec_formats = split_fields(ec_formats)
 
-        ja3_string = f"{version},{'-'.join(ciphers)},{'-'.join(extensions)},{'-'.join(curves)},{'-'.join(ec_formats)}"
+        # Build JA3 string
+        ja3_string = (
+            f"{version},"
+            f"{'-'.join(ciphers)},"
+            f"{'-'.join(extensions)},"
+            f"{'-'.join(curves)},"
+            f"{'-'.join(ec_formats)}"
+        )
 
+        # Generate hash
         ja3_hash = hashlib.md5(ja3_string.encode()).hexdigest()
 
         return ja3_string, ja3_hash
 
-    except Exception:
+    except Exception as e:
+        print("JA3 ERROR:", e)
         return None, None
